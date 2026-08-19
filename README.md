@@ -23,10 +23,3 @@ A minimal and modern web application that provides real-time weather conditions 
    git clone https://github.com/abasovf/weather-forecast-V1.git
    cd WeatherNow/
    ```
-   ### Git Commands to Push the Update:
-   ```bash
-   git add README.md
-   git commit -m "Add English README.md"
-   git push
-   
-   
