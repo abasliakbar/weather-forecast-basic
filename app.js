@@ -1,7 +1,7 @@
 /**
  * WeatherNow — app.js
  * OpenWeatherMap Current Weather Data + Forecast API integration
- * Features: Geolocation, hourly forecast, dynamic weather backgrounds
+ * Features: Geolocation, hourly forecast, dynamic temperature/weather themes, minimalist SVG icons
  */
 
 'use strict';
@@ -23,6 +23,7 @@ const weatherContainer   = document.getElementById('weather-container');
 const cityNameEl         = document.getElementById('city-name');
 const weatherDateEl      = document.getElementById('weather-date');
 const weatherIconEl      = document.getElementById('weather-icon');
+const weatherIconWrapper = document.getElementById('weather-icon-wrapper');
 const temperatureEl      = document.getElementById('temperature');
 const weatherDescEl      = document.getElementById('weather-description');
 const humidityEl         = document.getElementById('humidity');
@@ -121,12 +122,99 @@ function formatForecastTime(unixTimestamp, timezoneOffsetSeconds) {
   });
 }
 
-/* ── Weather Category Mapping ─────────────────────────── */
+/* ── Minimalist SVG Weather Line Icons ───────────────── */
+
+/**
+ * Return a clean minimalist vector line SVG icon for a given weather ID & icon code.
+ * @param {number} weatherId - OpenWeatherMap condition code
+ * @param {string} iconCode - OWM icon code (e.g. '01d', '01n')
+ * @returns {string} SVG markup string
+ */
+function getMinimalWeatherIconSvg(weatherId, iconCode = '01d') {
+  const isNight = iconCode.endsWith('n');
+
+  // Sun / Clear Sky
+  if (weatherId === 800) {
+    if (isNight) {
+      return `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      `;
+    }
+    return `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    `;
+  }
+
+  // Thunderstorm
+  if (weatherId >= 200 && weatherId < 300) {
+    return `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9"/>
+        <polygon points="13 11 9 17 14 17 11 23 18 15 13 15 13 11"/>
+      </svg>
+    `;
+  }
+
+  // Drizzle / Rain
+  if ((weatherId >= 300 && weatherId < 600)) {
+    return `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 13v6m-4-4v6m-4-2v6"/>
+        <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>
+      </svg>
+    `;
+  }
+
+  // Snow
+  if (weatherId >= 600 && weatherId < 700) {
+    return `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/>
+        <line x1="8" y1="16" x2="8.01" y2="16"/>
+        <line x1="12" y1="18" x2="12.01" y2="18"/>
+        <line x1="16" y1="16" x2="16.01" y2="16"/>
+        <line x1="10" y1="21" x2="10.01" y2="21"/>
+        <line x1="14" y1="21" x2="14.01" y2="21"/>
+      </svg>
+    `;
+  }
+
+  // Mist / Atmosphere
+  if (weatherId >= 700 && weatherId < 800) {
+    return `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="8" x2="21" y2="8"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <line x1="3" y1="16" x2="21" y2="16"/>
+        <line x1="7" y1="20" x2="17" y2="20"/>
+      </svg>
+    `;
+  }
+
+  // Clouds
+  return `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+    </svg>
+  `;
+}
+
+/* ── Weather Category & Temperature Theme Mapping ────── */
 
 /**
  * Map an OpenWeatherMap weather condition ID to a category string.
- * Used for dynamic background and rain detection.
- * See: https://openweathermap.org/weather-conditions
  */
 function getWeatherCategory(weatherId) {
   if (weatherId >= 200 && weatherId < 300) return 'storm';
@@ -140,9 +228,35 @@ function getWeatherCategory(weatherId) {
 }
 
 /**
- * Set the dynamic background gradient based on current weather.
- * @param {number} weatherId — OWM condition code
+ * Update dynamic temperature and weather condition themes.
+ * @param {number} temp - Current temperature in °C
+ * @param {number} weatherId - OWM weather condition code
  */
+function updateWeatherTheme(temp, weatherId) {
+  const category = getWeatherCategory(weatherId);
+
+  // Determine temperature band:
+  // Cold: < 5°C
+  // Mild: 5°C – 20°C
+  // Hot: > 20°C
+  let tempCategory = 'mild';
+  if (temp < 5) {
+    tempCategory = 'cold';
+  } else if (temp > 20) {
+    tempCategory = 'hot';
+  }
+
+  // Set data attributes on body for seamless CSS theme transition
+  document.body.dataset.tempCategory = tempCategory;
+  document.body.dataset.weatherCategory = category;
+
+  // Update background layer classes
+  const classes = bgGradient.className.split(' ').filter(c => !c.startsWith('weather-bg-'));
+  classes.push(`weather-bg-${category}`);
+  bgGradient.className = classes.join(' ');
+}
+
+/** Legacy wrapper for background updates */
 function setWeatherBackground(weatherId) {
   const category = getWeatherCategory(weatherId);
   const classes = bgGradient.className.split(' ').filter(c => !c.startsWith('weather-bg-'));
@@ -154,8 +268,6 @@ function setWeatherBackground(weatherId) {
 
 /**
  * Handle API error responses with user-friendly messages.
- * @param {Response} response
- * @throws {Error}
  */
 async function handleApiError(response) {
   if (response.status === 404) {
@@ -170,11 +282,7 @@ async function handleApiError(response) {
   throw new Error('Something went wrong. Please try again later.');
 }
 
-/**
- * Fetch current weather by city name.
- * @param {string} cityName
- * @returns {Promise<Object>} OpenWeatherMap response JSON
- */
+/** Fetch current weather by city name. */
 async function fetchWeatherByCity(cityName) {
   const url = `${BASE_URL}?q=${encodeURIComponent(cityName)}&appid=${API_KEY}&units=metric&lang=en`;
   const response = await fetch(url);
@@ -182,12 +290,7 @@ async function fetchWeatherByCity(cityName) {
   return response.json();
 }
 
-/**
- * Fetch current weather by coordinates.
- * @param {number} lat
- * @param {number} lon
- * @returns {Promise<Object>}
- */
+/** Fetch current weather by coordinates. */
 async function fetchWeatherByCoordinates(lat, lon) {
   const url = `${BASE_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=en`;
   const response = await fetch(url);
@@ -195,11 +298,7 @@ async function fetchWeatherByCoordinates(lat, lon) {
   return response.json();
 }
 
-/**
- * Fetch 5-day / 3-hour forecast by city name.
- * @param {string} cityName
- * @returns {Promise<Object>}
- */
+/** Fetch 5-day / 3-hour forecast by city name. */
 async function fetchForecastByCity(cityName) {
   const url = `${FORECAST_URL}?q=${encodeURIComponent(cityName)}&appid=${API_KEY}&units=metric&lang=en`;
   const response = await fetch(url);
@@ -207,12 +306,7 @@ async function fetchForecastByCity(cityName) {
   return response.json();
 }
 
-/**
- * Fetch 5-day / 3-hour forecast by coordinates.
- * @param {number} lat
- * @param {number} lon
- * @returns {Promise<Object>}
- */
+/** Fetch 5-day / 3-hour forecast by coordinates. */
 async function fetchForecastByCoordinates(lat, lon) {
   const url = `${FORECAST_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=en`;
   const response = await fetch(url);
@@ -222,10 +316,7 @@ async function fetchForecastByCoordinates(lat, lon) {
 
 /* ── Geolocation ──────────────────────────────────────── */
 
-/**
- * Get the user's current position via the Geolocation API.
- * @returns {Promise<{latitude: number, longitude: number}>}
- */
+/** Get the user's current position via the Geolocation API. */
 function getUserLocation() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -276,13 +367,24 @@ function populateWeatherCard(data) {
   // Date (local to the city's timezone)
   weatherDateEl.textContent = formatDate(dt, timezone);
 
-  // Icon (use @2x for crisp display on retina screens)
+  // Icon: Render minimalist SVG line icon
   const iconCode = weather[0].icon;
-  weatherIconEl.src = `https://openweathermap.org/img/wn/${iconCode}@4x.png`;
-  weatherIconEl.alt = weather[0].description;
+  const weatherId = weather[0].id;
+  const minimalSvg = getMinimalWeatherIconSvg(weatherId, iconCode);
+
+  if (weatherIconWrapper) {
+    weatherIconWrapper.innerHTML = minimalSvg;
+  }
+
+  // Keep OWM image fallback updated for reference
+  if (weatherIconEl) {
+    weatherIconEl.src = `https://openweathermap.org/img/wn/${iconCode}@4x.png`;
+    weatherIconEl.alt = weather[0].description;
+  }
 
   // Temperature
-  temperatureEl.textContent = Math.round(main.temp);
+  const roundedTemp = Math.round(main.temp);
+  temperatureEl.textContent = roundedTemp;
 
   // Description
   weatherDescEl.textContent = weather[0].description;
@@ -293,14 +395,13 @@ function populateWeatherCard(data) {
   feelsLikeEl.textContent  = `${Math.round(main.feels_like)}°C`;
   visibilityEl.textContent = visibility ? formatVisibility(visibility) : 'N/A';
 
-  // Dynamic background
-  setWeatherBackground(weather[0].id);
+  // Dynamic Theme (Temperature + Weather Condition Adaptation)
+  updateWeatherTheme(main.temp, weatherId);
 }
 
 /**
  * Render the hourly forecast cards.
  * Takes the first 8 entries from the 3-hour forecast (~24 hours).
- * @param {Object} forecastData — response from /data/2.5/forecast
  */
 function renderForecast(forecastData) {
   if (!forecastData || !forecastData.list || forecastData.list.length === 0) {
@@ -309,7 +410,6 @@ function renderForecast(forecastData) {
   }
 
   const timezoneOffset = forecastData.city.timezone;
-  // Take up to 8 entries = ~24 hours of 3-hour intervals
   const entries = forecastData.list.slice(0, 8);
 
   forecastScroll.innerHTML = '';
@@ -319,6 +419,7 @@ function renderForecast(forecastData) {
     card.className = 'forecast-card';
 
     const weatherId = entry.weather[0].id;
+    const iconCode = entry.weather[0].icon;
     const pop = entry.pop || 0; // probability of precipitation (0–1)
     const isRainy = pop > 0.3 || (weatherId >= 200 && weatherId < 600);
 
@@ -327,13 +428,13 @@ function renderForecast(forecastData) {
     }
 
     const time = formatForecastTime(entry.dt, timezoneOffset);
-    const iconCode = entry.weather[0].icon;
     const temp = Math.round(entry.main.temp);
     const popPercent = Math.round(pop * 100);
+    const minimalSvg = getMinimalWeatherIconSvg(weatherId, iconCode);
 
     card.innerHTML = `
       <span class="forecast-time">${time}</span>
-      <img class="forecast-icon" src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="${entry.weather[0].description}" loading="lazy" />
+      <div class="forecast-icon-svg">${minimalSvg}</div>
       <span class="forecast-temp">${temp}°</span>
       <span class="forecast-pop"><span class="rain-drop">💧</span> ${popPercent}%</span>
     `;
@@ -374,7 +475,6 @@ async function handleSearch() {
     renderForecast(forecastData);
     showPanel(weatherContainer);
   } catch (err) {
-    // Network errors (fetch rejects) vs. API errors (thrown above)
     if (err instanceof TypeError) {
       showError('Network error. Please check your internet connection.');
     } else {
@@ -405,11 +505,9 @@ async function initApp() {
     renderForecast(forecastData);
     showPanel(weatherContainer);
   } catch (err) {
-    // Geolocation failed or weather fetch by coords failed
     hideLoading();
 
     if (err instanceof TypeError) {
-      // Network error during weather fetch
       showGeoMessage('Network error. Please check your connection and search for a city.');
     } else {
       showGeoMessage(err.message);
