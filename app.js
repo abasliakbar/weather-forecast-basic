@@ -7,35 +7,78 @@
 'use strict';
 
 /* ── Config ───────────────────────────────────────────── */
-const API_KEY      = 'dd3a03503ba8c55ee624e430e89a3304';
-const BASE_URL     = 'https://api.openweathermap.org/data/2.5/weather';
+const API_KEY = 'dd3a03503ba8c55ee624e430e89a3304';
+const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast';
 
 /* ── DOM References ───────────────────────────────────── */
-const cityInput          = document.getElementById('city-input');
-const searchBtn          = document.getElementById('search-btn');
+const cityInput = document.getElementById('city-input');
+const searchBtn = document.getElementById('search-btn');
 
-const loader             = document.getElementById('loader');
-const errorContainer     = document.getElementById('error-container');
-const errorMessage       = document.getElementById('error-message');
-const weatherContainer   = document.getElementById('weather-container');
+const loader = document.getElementById('loader');
+const errorContainer = document.getElementById('error-container');
+const errorMessage = document.getElementById('error-message');
+const weatherContainer = document.getElementById('weather-container');
 
-const cityNameEl         = document.getElementById('city-name');
-const weatherDateEl      = document.getElementById('weather-date');
-const weatherIconEl      = document.getElementById('weather-icon');
+const cityNameEl = document.getElementById('city-name');
+const weatherDateEl = document.getElementById('weather-date');
+const weatherIconEl = document.getElementById('weather-icon');
 const weatherIconWrapper = document.getElementById('weather-icon-wrapper');
-const temperatureEl      = document.getElementById('temperature');
-const weatherDescEl      = document.getElementById('weather-description');
-const humidityEl         = document.getElementById('humidity');
-const windSpeedEl        = document.getElementById('wind-speed');
-const feelsLikeEl        = document.getElementById('feels-like');
-const visibilityEl       = document.getElementById('visibility');
+const temperatureEl = document.getElementById('temperature');
+const weatherDescEl = document.getElementById('weather-description');
+const humidityEl = document.getElementById('humidity');
+const windSpeedEl = document.getElementById('wind-speed');
+const feelsLikeEl = document.getElementById('feels-like');
+const visibilityEl = document.getElementById('visibility');
 
-const forecastContainer  = document.getElementById('forecast-container');
-const forecastScroll     = document.getElementById('forecast-scroll');
-const bgGradient         = document.getElementById('bg-gradient');
-const geoStatus          = document.getElementById('geo-status');
-const geoMessageEl       = document.getElementById('geo-message');
+const forecastContainer = document.getElementById('forecast-container');
+const forecastScroll = document.getElementById('forecast-scroll');
+const bgGradient = document.getElementById('bg-gradient');
+const geoStatus = document.getElementById('geo-status');
+const geoMessageEl = document.getElementById('geo-message');
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.querySelector('.theme-toggle-icon');
+const searchForm = document.querySelector('.search-form');
+
+function applyTheme(themeName) {
+  const safeTheme = themeName === 'light' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', safeTheme);
+
+  if (themeToggle) {
+    const isDark = safeTheme === 'dark';
+    themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+    if (themeIcon) {
+      themeIcon.textContent = isDark ? '☀️' : '🌙';
+    }
+  }
+
+  try {
+    localStorage.setItem('weather-theme', safeTheme);
+  } catch (error) {
+    // Ignore storage access issues in private browsing or restricted environments.
+  }
+}
+
+function initializeTheme() {
+  let savedTheme = 'dark';
+
+  try {
+    savedTheme = localStorage.getItem('weather-theme') || 'dark';
+  } catch (error) {
+    savedTheme = 'dark';
+  }
+
+  applyTheme(savedTheme);
+}
+
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  });
+}
+
+initializeTheme();
 
 /* ── State Helpers ────────────────────────────────────── */
 
@@ -90,9 +133,9 @@ function formatDate(unixTimestamp, timezoneOffsetSeconds) {
   const d = new Date(localMs);
   return d.toLocaleDateString('en-US', {
     weekday: 'long',
-    year:    'numeric',
-    month:   'long',
-    day:     'numeric',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
     timeZone: 'UTC',
   });
 }
@@ -390,9 +433,9 @@ function populateWeatherCard(data) {
   weatherDescEl.textContent = weather[0].description;
 
   // Detail cards
-  humidityEl.textContent   = `${main.humidity}%`;
-  windSpeedEl.textContent  = `${toOneDecimal(wind.speed)} m/s`;
-  feelsLikeEl.textContent  = `${Math.round(main.feels_like)}°C`;
+  humidityEl.textContent = `${main.humidity}%`;
+  windSpeedEl.textContent = `${toOneDecimal(wind.speed)} m/s`;
+  feelsLikeEl.textContent = `${Math.round(main.feels_like)}°C`;
   visibilityEl.textContent = visibility ? formatVisibility(visibility) : 'N/A';
 
   // Dynamic Theme (Temperature + Weather Condition Adaptation)
@@ -519,10 +562,21 @@ async function initApp() {
 
 /* ── Event Listeners ──────────────────────────────────── */
 
-searchBtn.addEventListener('click', handleSearch);
+searchBtn.addEventListener('click', (event) => {
+  event.preventDefault();
+  handleSearch();
+});
+
+if (searchForm) {
+  searchForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    handleSearch();
+  });
+}
 
 cityInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
+    e.preventDefault();
     handleSearch();
   }
 });
