@@ -1,0 +1,25 @@
+{
+  "name": "weather-forecast-basic",
+  "version": "1.0.0",
+  "description": "A minimal and modern web application that provides real-time weather conditions for any city.",
+  "main": "app.js",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static site - no build step required'",
+    "lint": "echo 'No linter configured'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abasliakbar/weather-forecast-basic.git"
+  },
+  "keywords": [
+    "weather",
+    "forecast",
+    "openweathermap"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^1.3.1"
+  }
+}
