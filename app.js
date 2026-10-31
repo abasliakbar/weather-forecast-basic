@@ -4,77 +4,83 @@
  * Features: Geolocation, hourly forecast, dynamic temperature/weather themes, minimalist SVG icons
  */
 
-'use strict';
+"use strict";
 
 /* ── Config ───────────────────────────────────────────── */
-const API_KEY = 'dd3a03503ba8c55ee624e430e89a3304';
-const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
-const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast';
+const API_KEY = "dd3a03503ba8c55ee624e430e89a3304";
+const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+const FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast";
 
 /* ── DOM References ───────────────────────────────────── */
-const cityInput = document.getElementById('city-input');
-const searchBtn = document.getElementById('search-btn');
+const cityInput = document.getElementById("city-input");
+const searchBtn = document.getElementById("search-btn");
 
-const loader = document.getElementById('loader');
-const errorContainer = document.getElementById('error-container');
-const errorMessage = document.getElementById('error-message');
-const weatherContainer = document.getElementById('weather-container');
+const loader = document.getElementById("loader");
+const errorContainer = document.getElementById("error-container");
+const errorMessage = document.getElementById("error-message");
+const weatherContainer = document.getElementById("weather-container");
 
-const cityNameEl = document.getElementById('city-name');
-const weatherDateEl = document.getElementById('weather-date');
-const weatherIconEl = document.getElementById('weather-icon');
-const weatherIconWrapper = document.getElementById('weather-icon-wrapper');
-const temperatureEl = document.getElementById('temperature');
-const weatherDescEl = document.getElementById('weather-description');
-const humidityEl = document.getElementById('humidity');
-const windSpeedEl = document.getElementById('wind-speed');
-const feelsLikeEl = document.getElementById('feels-like');
-const visibilityEl = document.getElementById('visibility');
+const cityNameEl = document.getElementById("city-name");
+const weatherDateEl = document.getElementById("weather-date");
+const weatherIconEl = document.getElementById("weather-icon");
+const weatherIconWrapper = document.getElementById("weather-icon-wrapper");
+const temperatureEl = document.getElementById("temperature");
+const weatherDescEl = document.getElementById("weather-description");
+const humidityEl = document.getElementById("humidity");
+const windSpeedEl = document.getElementById("wind-speed");
+const feelsLikeEl = document.getElementById("feels-like");
+const visibilityEl = document.getElementById("visibility");
 
-const forecastContainer = document.getElementById('forecast-container');
-const forecastScroll = document.getElementById('forecast-scroll');
-const bgGradient = document.getElementById('bg-gradient');
-const geoStatus = document.getElementById('geo-status');
-const geoMessageEl = document.getElementById('geo-message');
-const themeToggle = document.getElementById('theme-toggle');
-const themeIcon = document.querySelector('.theme-toggle-icon');
-const searchForm = document.querySelector('.search-form');
+const forecastContainer = document.getElementById("forecast-container");
+const forecastScroll = document.getElementById("forecast-scroll");
+const bgGradient = document.getElementById("bg-gradient");
+const geoStatus = document.getElementById("geo-status");
+const geoMessageEl = document.getElementById("geo-message");
+const themeToggle = document.getElementById("theme-toggle");
+const themeIcon = document.querySelector(".theme-toggle-icon");
+const searchForm = document.querySelector(".search-form");
 
 function applyTheme(themeName) {
-  const safeTheme = themeName === 'light' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', safeTheme);
+  const safeTheme = themeName === "light" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", safeTheme);
 
   if (themeToggle) {
-    const isDark = safeTheme === 'dark';
-    themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+    const isDark = safeTheme === "dark";
+    themeToggle.setAttribute(
+      "aria-label",
+      isDark ? "Switch to light mode" : "Switch to dark mode",
+    );
     if (themeIcon) {
-      themeIcon.textContent = isDark ? '☀️' : '🌙';
+      themeIcon.textContent = isDark ? "☀️" : "🌙";
     }
   }
 
   try {
-    localStorage.setItem('weather-theme', safeTheme);
+    localStorage.setItem("weather-theme", safeTheme);
   } catch (error) {
     // Ignore storage access issues in private browsing or restricted environments.
   }
 }
 
 function initializeTheme() {
-  let savedTheme = 'dark';
+  let savedTheme = "dark";
 
   try {
-    savedTheme = localStorage.getItem('weather-theme') || 'dark';
+    savedTheme = localStorage.getItem("weather-theme") || "dark";
   } catch (error) {
-    savedTheme = 'dark';
+    savedTheme = "dark";
   }
 
   applyTheme(savedTheme);
 }
 
 if (themeToggle) {
-  themeToggle.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-    applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  themeToggle.addEventListener("click", () => {
+    const currentTheme =
+      document.documentElement.getAttribute("data-theme") === "light"
+        ? "light"
+        : "dark";
+    applyTheme(currentTheme === "dark" ? "light" : "dark");
   });
 }
 
@@ -84,12 +90,12 @@ initializeTheme();
 
 /** Show only the specified panel; hide the others. */
 function showPanel(panel) {
-  loader.classList.add('hidden');
-  errorContainer.classList.add('hidden');
-  weatherContainer.classList.add('hidden');
+  loader.classList.add("hidden");
+  errorContainer.classList.add("hidden");
+  weatherContainer.classList.add("hidden");
 
   if (panel) {
-    panel.classList.remove('hidden');
+    panel.classList.remove("hidden");
   }
 }
 
@@ -97,7 +103,7 @@ function showPanel(panel) {
 function showError(message) {
   errorMessage.textContent = message;
   // Re-trigger animation by removing and re-adding class
-  errorContainer.classList.remove('hidden');
+  errorContainer.classList.remove("hidden");
   void errorContainer.offsetWidth; // force reflow
   showPanel(errorContainer);
 }
@@ -105,12 +111,12 @@ function showError(message) {
 /** Display a geolocation status message (non-blocking). */
 function showGeoMessage(message) {
   geoMessageEl.textContent = message;
-  geoStatus.classList.remove('hidden');
+  geoStatus.classList.remove("hidden");
 }
 
 /** Hide the geolocation status message. */
 function hideGeoMessage() {
-  geoStatus.classList.add('hidden');
+  geoStatus.classList.add("hidden");
 }
 
 /** Show the loading skeleton. */
@@ -121,7 +127,7 @@ function showLoading() {
 
 /** Hide the loading skeleton. */
 function hideLoading() {
-  loader.classList.add('hidden');
+  loader.classList.add("hidden");
   searchBtn.disabled = false;
 }
 
@@ -131,12 +137,12 @@ function hideLoading() {
 function formatDate(unixTimestamp, timezoneOffsetSeconds) {
   const localMs = (unixTimestamp + timezoneOffsetSeconds) * 1000;
   const d = new Date(localMs);
-  return d.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    timeZone: 'UTC',
+  return d.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
   });
 }
 
@@ -157,11 +163,11 @@ function formatVisibility(metres) {
 function formatForecastTime(unixTimestamp, timezoneOffsetSeconds) {
   const localMs = (unixTimestamp + timezoneOffsetSeconds) * 1000;
   const d = new Date(localMs);
-  return d.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
+  return d.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: false,
-    timeZone: 'UTC',
+    timeZone: "UTC",
   });
 }
 
@@ -173,8 +179,8 @@ function formatForecastTime(unixTimestamp, timezoneOffsetSeconds) {
  * @param {string} iconCode - OWM icon code (e.g. '01d', '01n')
  * @returns {string} SVG markup string
  */
-function getMinimalWeatherIconSvg(weatherId, iconCode = '01d') {
-  const isNight = iconCode.endsWith('n');
+function getMinimalWeatherIconSvg(weatherId, iconCode = "01d") {
+  const isNight = iconCode.endsWith("n");
 
   // Sun / Clear Sky
   if (weatherId === 800) {
@@ -211,7 +217,7 @@ function getMinimalWeatherIconSvg(weatherId, iconCode = '01d') {
   }
 
   // Drizzle / Rain
-  if ((weatherId >= 300 && weatherId < 600)) {
+  if (weatherId >= 300 && weatherId < 600) {
     return `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M16 13v6m-4-4v6m-4-2v6"/>
@@ -260,14 +266,14 @@ function getMinimalWeatherIconSvg(weatherId, iconCode = '01d') {
  * Map an OpenWeatherMap weather condition ID to a category string.
  */
 function getWeatherCategory(weatherId) {
-  if (weatherId >= 200 && weatherId < 300) return 'storm';
-  if (weatherId >= 300 && weatherId < 400) return 'drizzle';
-  if (weatherId >= 500 && weatherId < 600) return 'rain';
-  if (weatherId >= 600 && weatherId < 700) return 'snow';
-  if (weatherId >= 700 && weatherId < 800) return 'mist';
-  if (weatherId === 800) return 'clear';
-  if (weatherId > 800) return 'clouds';
-  return 'default';
+  if (weatherId >= 200 && weatherId < 300) return "storm";
+  if (weatherId >= 300 && weatherId < 400) return "drizzle";
+  if (weatherId >= 500 && weatherId < 600) return "rain";
+  if (weatherId >= 600 && weatherId < 700) return "snow";
+  if (weatherId >= 700 && weatherId < 800) return "mist";
+  if (weatherId === 800) return "clear";
+  if (weatherId > 800) return "clouds";
+  return "default";
 }
 
 /**
@@ -282,11 +288,11 @@ function updateWeatherTheme(temp, weatherId) {
   // Cold: < 5°C
   // Mild: 5°C – 20°C
   // Hot: > 20°C
-  let tempCategory = 'mild';
+  let tempCategory = "mild";
   if (temp < 5) {
-    tempCategory = 'cold';
+    tempCategory = "cold";
   } else if (temp > 20) {
-    tempCategory = 'hot';
+    tempCategory = "hot";
   }
 
   // Set data attributes on body for seamless CSS theme transition
@@ -294,17 +300,21 @@ function updateWeatherTheme(temp, weatherId) {
   document.body.dataset.weatherCategory = category;
 
   // Update background layer classes
-  const classes = bgGradient.className.split(' ').filter(c => !c.startsWith('weather-bg-'));
+  const classes = bgGradient.className
+    .split(" ")
+    .filter((c) => !c.startsWith("weather-bg-"));
   classes.push(`weather-bg-${category}`);
-  bgGradient.className = classes.join(' ');
+  bgGradient.className = classes.join(" ");
 }
 
 /** Legacy wrapper for background updates */
 function setWeatherBackground(weatherId) {
   const category = getWeatherCategory(weatherId);
-  const classes = bgGradient.className.split(' ').filter(c => !c.startsWith('weather-bg-'));
+  const classes = bgGradient.className
+    .split(" ")
+    .filter((c) => !c.startsWith("weather-bg-"));
   classes.push(`weather-bg-${category}`);
-  bgGradient.className = classes.join(' ');
+  bgGradient.className = classes.join(" ");
 }
 
 /* ── API Functions ────────────────────────────────────── */
@@ -314,15 +324,17 @@ function setWeatherBackground(weatherId) {
  */
 async function handleApiError(response) {
   if (response.status === 404) {
-    throw new Error('City not found. Please check the spelling and try again.');
+    throw new Error("City not found. Please check the spelling and try again.");
   }
   if (response.status === 401) {
-    throw new Error('Unable to access weather data. Please check the API configuration.');
+    throw new Error(
+      "Unable to access weather data. Please check the API configuration.",
+    );
   }
   if (response.status === 429) {
-    throw new Error('Too many requests. Please wait a moment and try again.');
+    throw new Error("Too many requests. Please wait a moment and try again.");
   }
-  throw new Error('Something went wrong. Please try again later.');
+  throw new Error("Something went wrong. Please try again later.");
 }
 
 /** Fetch current weather by city name. */
@@ -363,7 +375,11 @@ async function fetchForecastByCoordinates(lat, lon) {
 function getUserLocation() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      reject(new Error('Geolocation is not supported by your browser. Search for a city to get started.'));
+      reject(
+        new Error(
+          "Geolocation is not supported by your browser. Search for a city to get started.",
+        ),
+      );
       return;
     }
 
@@ -377,23 +393,39 @@ function getUserLocation() {
       (error) => {
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            reject(new Error('Location access was denied. Search for a city to get started.'));
+            reject(
+              new Error(
+                "Location access was denied. Search for a city to get started.",
+              ),
+            );
             break;
           case error.POSITION_UNAVAILABLE:
-            reject(new Error('Location services are unavailable. Search for a city to get started.'));
+            reject(
+              new Error(
+                "Location services are unavailable. Search for a city to get started.",
+              ),
+            );
             break;
           case error.TIMEOUT:
-            reject(new Error('Location request timed out. Search for a city to get started.'));
+            reject(
+              new Error(
+                "Location request timed out. Search for a city to get started.",
+              ),
+            );
             break;
           default:
-            reject(new Error('Unable to determine your location. Search for a city to get started.'));
+            reject(
+              new Error(
+                "Unable to determine your location. Search for a city to get started.",
+              ),
+            );
         }
       },
       {
         enableHighAccuracy: false,
         timeout: 10000,
         maximumAge: 300000, // 5 minutes
-      }
+      },
     );
   });
 }
@@ -436,7 +468,7 @@ function populateWeatherCard(data) {
   humidityEl.textContent = `${main.humidity}%`;
   windSpeedEl.textContent = `${toOneDecimal(wind.speed)} m/s`;
   feelsLikeEl.textContent = `${Math.round(main.feels_like)}°C`;
-  visibilityEl.textContent = visibility ? formatVisibility(visibility) : 'N/A';
+  visibilityEl.textContent = visibility ? formatVisibility(visibility) : "N/A";
 
   // Dynamic Theme (Temperature + Weather Condition Adaptation)
   updateWeatherTheme(main.temp, weatherId);
@@ -448,18 +480,18 @@ function populateWeatherCard(data) {
  */
 function renderForecast(forecastData) {
   if (!forecastData || !forecastData.list || forecastData.list.length === 0) {
-    forecastContainer.classList.add('hidden');
+    forecastContainer.classList.add("hidden");
     return;
   }
 
   const timezoneOffset = forecastData.city.timezone;
   const entries = forecastData.list.slice(0, 8);
 
-  forecastScroll.innerHTML = '';
+  forecastScroll.innerHTML = "";
 
   entries.forEach((entry) => {
-    const card = document.createElement('div');
-    card.className = 'forecast-card';
+    const card = document.createElement("div");
+    card.className = "forecast-card";
 
     const weatherId = entry.weather[0].id;
     const iconCode = entry.weather[0].icon;
@@ -467,7 +499,7 @@ function renderForecast(forecastData) {
     const isRainy = pop > 0.3 || (weatherId >= 200 && weatherId < 600);
 
     if (isRainy) {
-      card.classList.add('rain-highlight');
+      card.classList.add("rain-highlight");
     }
 
     const time = formatForecastTime(entry.dt, timezoneOffset);
@@ -485,7 +517,7 @@ function renderForecast(forecastData) {
     forecastScroll.appendChild(card);
   });
 
-  forecastContainer.classList.remove('hidden');
+  forecastContainer.classList.remove("hidden");
 }
 
 /* ── Main Handlers ────────────────────────────────────── */
@@ -496,7 +528,7 @@ async function handleSearch() {
 
   // Validate input
   if (!cityName) {
-    showError('Please enter a city name.');
+    showError("Please enter a city name.");
     cityInput.focus();
     return;
   }
@@ -519,7 +551,7 @@ async function handleSearch() {
     showPanel(weatherContainer);
   } catch (err) {
     if (err instanceof TypeError) {
-      showError('Network error. Please check your internet connection.');
+      showError("Network error. Please check your internet connection.");
     } else {
       showError(err.message);
     }
@@ -541,7 +573,9 @@ async function initApp() {
     // Fetch weather and forecast in parallel using coordinates
     const [weatherData, forecastData] = await Promise.all([
       fetchWeatherByCoordinates(coords.latitude, coords.longitude),
-      fetchForecastByCoordinates(coords.latitude, coords.longitude).catch(() => null),
+      fetchForecastByCoordinates(coords.latitude, coords.longitude).catch(
+        () => null,
+      ),
     ]);
 
     populateWeatherCard(weatherData);
@@ -551,7 +585,9 @@ async function initApp() {
     hideLoading();
 
     if (err instanceof TypeError) {
-      showGeoMessage('Network error. Please check your connection and search for a city.');
+      showGeoMessage(
+        "Network error. Please check your connection and search for a city.",
+      );
     } else {
       showGeoMessage(err.message);
     }
@@ -562,28 +598,28 @@ async function initApp() {
 
 /* ── Event Listeners ──────────────────────────────────── */
 
-searchBtn.addEventListener('click', (event) => {
+searchBtn.addEventListener("click", (event) => {
   event.preventDefault();
   handleSearch();
 });
 
 if (searchForm) {
-  searchForm.addEventListener('submit', (event) => {
+  searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
     handleSearch();
   });
 }
 
-cityInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
+cityInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
     e.preventDefault();
     handleSearch();
   }
 });
 
 // Clear error when user starts typing again
-cityInput.addEventListener('input', () => {
-  if (!errorContainer.classList.contains('hidden')) {
+cityInput.addEventListener("input", () => {
+  if (!errorContainer.classList.contains("hidden")) {
     showPanel(null);
   }
 });

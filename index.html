@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
@@ -44,7 +44,14 @@
       <header class="topbar" role="banner">
         <div class="brand" aria-label="WeatherNow home">
           <div class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <circle cx="12" cy="12" r="5" />
               <line x1="12" y1="1" x2="12" y2="3" />
               <line x1="12" y1="21" x2="12" y2="23" />
@@ -60,8 +67,23 @@
           <span class="header-badge">Live</span>
         </div>
 
-        <form class="search-form" role="search" aria-label="Search city weather">
-          <svg class="search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <form
+          class="search-form"
+          role="search"
+          aria-label="Search city weather"
+        >
+          <svg
+            class="search-icon"
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
@@ -75,9 +97,23 @@
             maxlength="80"
             spellcheck="false"
           />
-          <button id="search-btn" class="search-btn" type="button" aria-label="Search weather for entered city">
+          <button
+            id="search-btn"
+            class="search-btn"
+            type="button"
+            aria-label="Search weather for entered city"
+          >
             <span class="search-btn-arrow" aria-hidden="true">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
@@ -85,14 +121,35 @@
           </button>
         </form>
 
-        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode">
+        <button
+          id="theme-toggle"
+          class="theme-toggle"
+          type="button"
+          aria-label="Switch to light mode"
+        >
           <span class="theme-toggle-icon" aria-hidden="true">☀️</span>
         </button>
       </header>
 
       <main id="main-content" class="glass-card" role="main">
-        <div id="geo-status" class="geo-status hidden" role="status" aria-live="polite">
-          <svg class="geo-status-icon" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <div
+          id="geo-status"
+          class="geo-status hidden"
+          role="status"
+          aria-live="polite"
+        >
+          <svg
+            class="geo-status-icon"
+            aria-hidden="true"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -100,7 +157,13 @@
           <span id="geo-message" class="geo-message-text"></span>
         </div>
 
-        <div id="loader" class="skeleton-container hidden" aria-live="polite" aria-label="Loading weather data" aria-busy="true">
+        <div
+          id="loader"
+          class="skeleton-container hidden"
+          aria-live="polite"
+          aria-label="Loading weather data"
+          aria-busy="true"
+        >
           <div class="skeleton-top-row">
             <div class="skeleton-city-group">
               <div class="skeleton-city-name skeleton-pulse"></div>
@@ -128,9 +191,23 @@
           </div>
         </div>
 
-        <div id="error-container" class="error-container hidden" role="alert" aria-live="assertive">
+        <div
+          id="error-container"
+          class="error-container hidden"
+          role="alert"
+          aria-live="assertive"
+        >
           <div class="error-icon-wrap" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -139,11 +216,27 @@
           <span id="error-message" class="error-text"></span>
         </div>
 
-        <section id="weather-container" class="weather-container hidden" aria-label="Current weather conditions" aria-live="polite">
+        <section
+          id="weather-container"
+          class="weather-container hidden"
+          aria-label="Current weather conditions"
+          aria-live="polite"
+        >
           <div class="weather-hero">
             <div class="hero-left">
               <div class="city-row">
-                <svg class="location-pin" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                  class="location-pin"
+                  aria-hidden="true"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
@@ -160,7 +253,12 @@
             <div class="hero-right">
               <div class="icon-shell" aria-hidden="true">
                 <div id="weather-icon-wrapper" class="icon-wrapper">
-                  <img id="weather-icon" class="weather-icon hidden" src="" alt="Weather icon" />
+                  <img
+                    id="weather-icon"
+                    class="weather-icon hidden"
+                    src=""
+                    alt="Weather icon"
+                  />
                 </div>
               </div>
             </div>
@@ -172,7 +270,16 @@
             <div class="detail-bezel" role="listitem" id="detail-humidity">
               <div class="detail-card">
                 <div class="detail-icon" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
                     <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
                   </svg>
                 </div>
@@ -186,8 +293,19 @@
             <div class="detail-bezel" role="listitem" id="detail-wind">
               <div class="detail-card">
                 <div class="detail-icon" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"
+                    />
                   </svg>
                 </div>
                 <div class="detail-info">
@@ -200,8 +318,19 @@
             <div class="detail-bezel" role="listitem" id="detail-feels">
               <div class="detail-card">
                 <div class="detail-icon" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"
+                    />
                   </svg>
                 </div>
                 <div class="detail-info">
@@ -214,7 +343,16 @@
             <div class="detail-bezel" role="listitem" id="detail-visibility">
               <div class="detail-card">
                 <div class="detail-icon" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                     <circle cx="12" cy="12" r="3" />
                   </svg>
@@ -229,15 +367,33 @@
 
           <div class="divider divider-forecast" aria-hidden="true"></div>
 
-          <div id="forecast-container" class="forecast-container hidden" aria-label="Hourly forecast">
+          <div
+            id="forecast-container"
+            class="forecast-container hidden"
+            aria-label="Hourly forecast"
+          >
             <p class="forecast-title">Next 24 hours</p>
-            <div id="forecast-scroll" class="forecast-scroll" role="list" aria-label="Hourly forecast cards"></div>
+            <div
+              id="forecast-scroll"
+              class="forecast-scroll"
+              role="list"
+              aria-label="Hourly forecast cards"
+            ></div>
           </div>
         </section>
       </main>
 
       <footer class="app-footer" role="contentinfo">
-        <p>Data from <a href="https://openweathermap.org" target="_blank" rel="noopener noreferrer" aria-label="OpenWeatherMap, opens in new tab">OpenWeatherMap</a></p>
+        <p>
+          Data from
+          <a
+            href="https://openweathermap.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="OpenWeatherMap, opens in new tab"
+            >OpenWeatherMap</a
+          >
+        </p>
       </footer>
     </div>
 
